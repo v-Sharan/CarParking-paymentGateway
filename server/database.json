@@ -1,0 +1,13 @@
+{
+  "available": 0,
+  "reserved": 0,
+  "parked": 0,
+  "soltData": [
+    { "pid": 1, "floor": 1 },
+    { "pid": 2, "floor": 2 },
+    { "pid": 3, "floor": 3 },
+    { "pid": 4, "floor": 4 },
+    { "pid": 5, "floor": 5 }
+  ],
+  "lastUpdate": ""
+}
