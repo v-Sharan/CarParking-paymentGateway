@@ -9,6 +9,11 @@ const UserSchema = new Schema(
       required: [true, "User Name is important"],
       unique: [true, "User already exists"],
     },
+    clerkId: {
+      type: String,
+      required: [true, "clerkid is need to authendicate"],
+      unique: [true, "Clerkid must be unique"],
+    },
     email: {
       type: String,
       required: [true, "Email id is required"],

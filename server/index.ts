@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { config } from "dotenv";
+import { ConnectDB } from "./schema/connection";
 
 import RaspberryRoutes from "./Router/RaspberryRoutes";
 
@@ -14,9 +15,19 @@ server.use(bodyParser.json());
 server.use(cors());
 
 const port = process.env.PORT ?? 8000;
+const url = process.env.MONGODB_URL ?? "";
 
 server.use("/api", RaspberryRoutes);
 
-server.listen(port, () => {
-  console.log("http://localhost:8000");
-});
+const StartServer = () => {
+  try {
+    ConnectDB(url);
+    server.listen(port, () => {
+      console.log("http://localhost:8000");
+    });
+  } catch (e: any) {
+    console.log(`Error ${e}`);
+  }
+};
+
+StartServer();
