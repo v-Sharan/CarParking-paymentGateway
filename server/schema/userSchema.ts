@@ -21,12 +21,9 @@ const UserSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Password id is required"],
+      required: false,
     },
-    userPhoto: {
-      type: String,
-      required: [true, "Profile photo is required"],
-    },
+    currentbookingId: { type: mongoose.Types.ObjectId, ref: "Payment" },
     bookingHistory: [{ type: mongoose.Types.ObjectId, ref: "booking" }],
   },
   { timestamps: true }

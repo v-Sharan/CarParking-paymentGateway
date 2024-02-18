@@ -1,27 +1,72 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
-import { Slot, useRouter, useSegments } from "expo-router";
-import { useEffect } from "react";
+import { Slot, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
+import { useUser } from "@clerk/clerk-expo";
+import { Alert } from "react-native";
+import axios from "axios";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 const InitialLayout = () => {
   const { isLoaded, isSignedIn } = useAuth();
-  const segments = useSegments();
   const router = useRouter();
+  const [login, setLogin] = useState(false);
+
+  const { user } = useUser();
+
+  const userLogin = async ({
+    clerkId,
+    username,
+    email,
+  }: {
+    username: string | null | undefined;
+    email: string | undefined;
+    clerkId: string | undefined;
+  }) => {
+    try {
+      const body = JSON.stringify({ username, email, clerkId });
+      console.log(body);
+      const res = await fetch("http://192.168.189.177:8000/auth/login", {
+        method: "POST",
+        body,
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+      if (res.ok) Alert.alert("Logged in Succesfully");
+    } catch (e) {
+      Alert.alert("Server Error pls try again");
+      return;
+    }
+  };
+
+  useEffect(() => {
+    if (!isSignedIn) setLogin(false);
+  }, [isSignedIn]);
 
   useEffect(() => {
     if (!isLoaded) return;
-
-    const inTabsGroup = segments[0] === "(auth)";
-    console.log(segments);
-
     console.log("User changed: ", isSignedIn);
 
-    if (isSignedIn && !inTabsGroup) {
+    if (isSignedIn && !login) {
+      if (
+        !!user?.id &&
+        !!user?.emailAddresses[0].emailAddress &&
+        !!user?.username
+      )
+        return;
+      let username = user?.emailAddresses[0].emailAddress?.split("@")[0];
+      userLogin({
+        clerkId: user?.id,
+        username,
+        email: user?.emailAddresses[0].emailAddress,
+      }).then(() => setLogin(true));
+      router.replace("/home");
+    } else if (isSignedIn) {
       router.replace("/home");
     } else if (!isSignedIn) {
-      router.replace("/login");
+      router.replace("/register");
     }
   }, [isSignedIn]);
 

@@ -32,22 +32,11 @@ const TabsPage = () => {
       <Tabs.Screen
         name="home"
         options={{
-          headerTitle: "Home",
+          headerTitle: "Homes",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
           tabBarLabel: "Home",
-        }}
-        redirect={!isSignedIn}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          headerTitle: "My Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
-          tabBarLabel: "My Profile",
           headerRight: () => <LogoutButton />,
         }}
         redirect={!isSignedIn}

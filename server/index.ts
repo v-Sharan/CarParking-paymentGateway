@@ -5,6 +5,8 @@ import { config } from "dotenv";
 import { ConnectDB } from "./schema/connection";
 
 import RaspberryRoutes from "./Router/RaspberryRoutes";
+import AuthRoutes from "./Router/auth";
+import SlotRoutes from "./Router/SlotRoutes";
 
 config();
 
@@ -18,6 +20,8 @@ const port = process.env.PORT ?? 8000;
 const url = process.env.MONGODB_URL ?? "";
 
 server.use("/api", RaspberryRoutes);
+server.use("/auth", AuthRoutes);
+server.use("/slot", SlotRoutes);
 
 const StartServer = () => {
   try {

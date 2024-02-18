@@ -4,16 +4,20 @@ const Schema = mongoose.Schema;
 
 const PaymentSchema = new Schema(
   {
-    username: {
+    userId: {
       type: String,
-      required: [true, "User Name is important"],
+      required: [true, "UserId is important"],
     },
     orderId: {
       type: String,
       required: [true, "orderId is important"],
     },
+    verify: {
+      type: Boolean,
+      required: [true, "verify initially false"],
+    },
   },
   { timestamps: true }
 );
 
-export const User = mongoose.model("User", PaymentSchema);
+export const Payment = mongoose.model("Payment", PaymentSchema);

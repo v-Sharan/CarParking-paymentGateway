@@ -2,11 +2,10 @@ import { Button, TextInput, View, StyleSheet } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 
 const Register = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
-
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
@@ -50,7 +49,6 @@ const Register = () => {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code,
       });
-
       await setActive({ session: completeSignUp.createdSessionId });
     } catch (err: any) {
       alert(err.errors[0].message);
@@ -68,7 +66,7 @@ const Register = () => {
         <>
           <TextInput
             autoCapitalize="none"
-            placeholder="simon@galaxies.dev"
+            placeholder="Email"
             value={emailAddress}
             onChangeText={setEmailAddress}
             style={styles.inputField}
@@ -80,12 +78,18 @@ const Register = () => {
             secureTextEntry
             style={styles.inputField}
           />
-
-          <Button
-            onPress={onSignUpPress}
-            title="Sign up"
-            color={"#6c47ff"}
-          ></Button>
+          <View style={{ gap: 5, marginVertical: 5 }}>
+            <Button
+              onPress={onSignUpPress}
+              title="Sign up"
+              color={"#6c47ff"}
+            ></Button>
+            <Button
+              onPress={() => router.replace("/login")}
+              title="Go to Login"
+              color={"#6c47ff"}
+            ></Button>
+          </View>
         </>
       )}
 
