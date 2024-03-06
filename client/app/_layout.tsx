@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { useUser } from "@clerk/clerk-expo";
 import { Alert } from "react-native";
-import axios from "axios";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
