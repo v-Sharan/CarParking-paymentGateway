@@ -18,8 +18,13 @@ router.post("/createOrder", async (req: Request, res: Response) => {
 });
 
 router.post("/verify", async (req: Request, res: Response) => {
-  const { razorpay_payment_id, razorpay_order_id, razorpay_signature, userId } =
-    req.body;
+  const {
+    razorpay_payment_id,
+    razorpay_order_id,
+    razorpay_signature,
+    userId,
+    pid,
+  } = req.body;
   const isverified = validatePaymentVerification(
     { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
     razorpay_signature,
@@ -33,21 +38,15 @@ router.post("/verify", async (req: Request, res: Response) => {
     verify: true,
   });
   await pay.save();
-  console.log("pay");
-  const slots = await Slot.find({});
-  const Empty = slots.filter((sl) => sl.status === "free");
-  if (!Empty.length)
-    return res.json({
-      message: "There is no empty Slots available Money will be refunded",
-    });
+  const slots = await Slot.findOneAndUpdate({ pid }, { status: "booked" });
   const Book = await Booking.create({
     orderId: razorpay_order_id,
     userId: userId,
-    slot: Empty[0]._id,
+    slot: slots?._id,
   });
   await Book.save();
   return res.json({
-    message: `Payment success and Booked slot number ${Empty[0].pid}`,
+    message: `Payment success and Booked slot number ${slots?.pid}`,
   });
 });
 

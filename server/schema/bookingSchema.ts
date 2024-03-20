@@ -7,16 +7,14 @@ const BookingSchema = new Schema(
     userId: {
       type: String,
       required: [true, "User Id is important"],
-      unique: [true, "User already exists"],
     },
     orderId: {
       type: String,
-      required: [true, "Order Id is important"],
-      unique: [true, "OrderId already exists"],
+      required: [true, "Orders Id is important"],
     },
     slot: [
       {
-        type: { type: mongoose.Types.ObjectId, ref: "Slot" },
+        type: String,
       },
     ],
   },

@@ -28,7 +28,7 @@ const booking = () => {
   const [slot, setSlot] = useState<SlotType[] | []>([]);
   const { user } = useUser();
 
-  const [select, setSelect] = useState<number>(0);
+  const [select, setSelect] = useState<number>(-1);
 
   const { data, refetch, isLoading, isRefetching } = useQuery("slots", () => {
     return axios.get("http://192.168.192.177:8000/slot", {});
@@ -83,10 +83,10 @@ const booking = () => {
     };
     RazorpayCheckout.open(options)
       .then((data: any) => {
-        console.log(data);
+        const body = { ...data, userId: user?.id, pid: select };
         axios
-          .post("http://192.168.192.177:8000/payment/verify", data)
-          .then((res) => console.log(res.data))
+          .post("http://192.168.192.177:8000/payment/verify", body)
+          .then((res) => Alert.alert(res.data.message))
           .catch((e) => console.log(e));
       })
       .catch((error: any) => {
@@ -109,7 +109,7 @@ const booking = () => {
           }}
           ListFooterComponent={() => (
             <Button
-              disabled={!!!select}
+              disabled={select == -1}
               title="Book now"
               onPress={CreateOrderID}
             />
@@ -120,12 +120,20 @@ const booking = () => {
               color = "lightgreen";
             } else if (item.status == "booked") {
               color = "lightblue";
+              // setSelect(-1);
             } else {
               color = "red";
+              // setSelect(-1);
             }
             return (
               <Pressable
-                onPress={() => setSelect(item.pid)}
+                onPress={() => {
+                  if (item.status == "booked" || item.status == "parked") {
+                    Alert.alert("Already booked or parked");
+                    return;
+                  }
+                  setSelect(item.pid);
+                }}
                 style={[
                   {
                     borderWidth: 1,
@@ -133,12 +141,16 @@ const booking = () => {
                     padding: 10,
                     height: 100,
                     width: 100,
-                    borderColor: color,
-                    backgroundColor: color,
                     borderRadius: 10,
                     justifyContent: "center",
                     alignItems: "center",
                   },
+                  select == item.pid
+                    ? { borderColor: "royalblue", backgroundColor: "royalblue" }
+                    : {
+                        borderColor: color,
+                        backgroundColor: color,
+                      },
                 ]}
                 disabled={color == ("booked" || "parked")}
               >
