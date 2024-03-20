@@ -6,10 +6,18 @@ type SlotType = {
   floor: number;
   updatedAt: string;
   createdAt: string;
-  free: boolean;
+  status: string;
 };
 
-const Slot = ({ _id, pid, floor, updatedAt, createdAt, free }: SlotType) => {
+const Slot = ({ _id, pid, floor, updatedAt, createdAt, status }: SlotType) => {
+  let color = "white";
+  if (status == "free") {
+    color = "lightgreen";
+  } else if (status == "booked") {
+    color = "lightblue";
+  } else {
+    color = "red";
+  }
   return (
     <TouchableOpacity
       style={{
@@ -18,13 +26,13 @@ const Slot = ({ _id, pid, floor, updatedAt, createdAt, free }: SlotType) => {
         padding: 10,
         height: 100,
         width: 100,
-        backgroundColor: free ? "lightgreen" : "red",
-        borderColor: "green",
+        backgroundColor: color,
+        borderColor: color,
         borderRadius: 10,
         justifyContent: "center",
         alignItems: "center",
       }}
-      disabled={free}
+      disabled={color == ("booked" || "parked")}
     >
       <Text>Slot {pid}</Text>
       <Text>Floor {floor}</Text>

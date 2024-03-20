@@ -12,8 +12,9 @@ const SlotSchema = new Schema(
       type: Number,
       required: [true, "Floor is required to display"],
     },
-    free: {
-      type: Boolean,
+    status: {
+      type: String,
+      required: [true, "Free column is required"],
     },
   },
   { timestamps: true }

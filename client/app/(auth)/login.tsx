@@ -210,7 +210,6 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   seperator: {
-    fontFamily: "mon-sb",
     color: "#778899",
     fontSize: 16,
   },

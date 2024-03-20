@@ -12,14 +12,14 @@ type SlotType = {
   floor: number;
   updatedAt: string;
   createdAt: string;
-  free: boolean;
+  status: string;
 };
 
 const Home = () => {
   const [slot, setSlot] = useState<SlotType[] | []>([]);
 
   const { data, refetch, isLoading, isRefetching } = useQuery("blogs", () => {
-    return axios.get("http://192.168.8.177:8000/slot", {});
+    return axios.get("http://192.168.192.177:8000/slot", {});
   });
 
   const firstTimeRef = useRef(true);

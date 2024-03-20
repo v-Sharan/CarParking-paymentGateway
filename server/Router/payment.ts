@@ -3,6 +3,8 @@ import { Payment } from "../schema/paymentSchema";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
 
 import { client } from "../utils/client";
+import { Slot } from "../schema/SlotSchema";
+import { Booking } from "../schema/bookingSchema";
 
 const router = Router();
 
@@ -31,7 +33,22 @@ router.post("/verify", async (req: Request, res: Response) => {
     verify: true,
   });
   await pay.save();
-  return res.json({ message: "Payment success" });
+  console.log("pay");
+  const slots = await Slot.find({});
+  const Empty = slots.filter((sl) => sl.status === "free");
+  if (!Empty.length)
+    return res.json({
+      message: "There is no empty Slots available Money will be refunded",
+    });
+  const Book = await Booking.create({
+    orderId: razorpay_order_id,
+    userId: userId,
+    slot: Empty[0]._id,
+  });
+  await Book.save();
+  return res.json({
+    message: `Payment success and Booked slot number ${Empty[0].pid}`,
+  });
 });
 
 export default router;

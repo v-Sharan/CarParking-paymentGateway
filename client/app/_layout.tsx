@@ -36,7 +36,7 @@ const InitialLayout = () => {
 
     try {
       const body = JSON.stringify({ username, email, clerkId });
-      const res = await fetch("http://192.168.8.177:8000/auth/login", {
+      const res = await fetch("http://192.168.192.177:8000/auth/login", {
         method: "POST",
         body,
         headers: {

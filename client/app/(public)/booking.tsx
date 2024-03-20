@@ -21,7 +21,7 @@ type SlotType = {
   floor: number;
   updatedAt: string;
   createdAt: string;
-  free: boolean;
+  status: string;
 };
 
 const booking = () => {
@@ -31,7 +31,7 @@ const booking = () => {
   const [select, setSelect] = useState<number>(0);
 
   const { data, refetch, isLoading, isRefetching } = useQuery("slots", () => {
-    return axios.get("http://192.168.8.177:8000/slot", {});
+    return axios.get("http://192.168.192.177:8000/slot", {});
   });
 
   const firstTimeRef = useRef(true);
@@ -53,13 +53,13 @@ const booking = () => {
 
   const CreateOrderID = async () => {
     const { data } = await axios.post(
-      "http://192.168.8.177:8000/payment/createOrder",
+      "http://192.168.192.177:8000/payment/createOrder",
       {
         amount: 100,
       }
     );
     await onBook({
-      order_id: data.order.order_id,
+      order_id: data.order.id,
       amount: data?.order?.amount,
     });
   };
@@ -75,7 +75,7 @@ const booking = () => {
       description: "Credits towards consultation",
       image: "https://i.imgur.com/3g7nmJC.jpg",
       currency: "INR",
-      key: process.env.EXPO_PUBLIC_RAZOPAY_KEYID!,
+      key: "rzp_test_Y93gae5wcNwuzP",
       amount,
       name: "sharan",
       order_id: order_id, //Replace this with an order_id created using Orders API.
@@ -83,15 +83,15 @@ const booking = () => {
     };
     RazorpayCheckout.open(options)
       .then((data: any) => {
+        console.log(data);
         axios
-          .post("http://192.168.8.177:8000/payment/verify", data)
+          .post("http://192.168.192.177:8000/payment/verify", data)
           .then((res) => console.log(res.data))
           .catch((e) => console.log(e));
       })
       .catch((error: any) => {
         // handle failure
-        console.log(error);
-        alert(`Error: ${error.code} | ${error.description}`);
+        console.warn(error);
       });
   };
 
@@ -115,6 +115,14 @@ const booking = () => {
             />
           )}
           renderItem={({ item }) => {
+            let color = "white";
+            if (item.status == "free") {
+              color = "lightgreen";
+            } else if (item.status == "booked") {
+              color = "lightblue";
+            } else {
+              color = "red";
+            }
             return (
               <Pressable
                 onPress={() => setSelect(item.pid)}
@@ -125,21 +133,14 @@ const booking = () => {
                     padding: 10,
                     height: 100,
                     width: 100,
-                    borderColor: "green",
+                    borderColor: color,
+                    backgroundColor: color,
                     borderRadius: 10,
                     justifyContent: "center",
                     alignItems: "center",
                   },
-                  item.free
-                    ? {
-                        backgroundColor:
-                          select == item.pid ? "lightblue" : "lightgreen",
-                      }
-                    : {
-                        backgroundColor: !item.free ? "grey" : "lightgreen",
-                      },
                 ]}
-                disabled={!item.free}
+                disabled={color == ("booked" || "parked")}
               >
                 <Text>Slot {item.pid}</Text>
               </Pressable>

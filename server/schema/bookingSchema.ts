@@ -14,10 +14,11 @@ const BookingSchema = new Schema(
       required: [true, "Order Id is important"],
       unique: [true, "OrderId already exists"],
     },
-    slot: {
-      type: { type: mongoose.Types.ObjectId, ref: "Payment" },
-      required: [true, "Slot number Id is important"],
-    },
+    slot: [
+      {
+        type: { type: mongoose.Types.ObjectId, ref: "Slot" },
+      },
+    ],
   },
   { timestamps: true }
 );
