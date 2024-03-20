@@ -7,6 +7,7 @@ import { ConnectDB } from "./schema/connection";
 import RaspberryRoutes from "./Router/RaspberryRoutes";
 import AuthRoutes from "./Router/auth";
 import SlotRoutes from "./Router/SlotRoutes";
+import PaymentRoutes from "./Router/payment";
 
 config();
 
@@ -22,6 +23,7 @@ const url = process.env.MONGODB_URL ?? "";
 server.use("/api", RaspberryRoutes);
 server.use("/auth", AuthRoutes);
 server.use("/slot", SlotRoutes);
+server.use("/payment", PaymentRoutes);
 
 const StartServer = () => {
   try {

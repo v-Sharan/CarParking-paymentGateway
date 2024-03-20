@@ -17,4 +17,4 @@ const PublicSlotSchema = new Schema(
   { timestamps: true }
 );
 
-export const Parking = mongoose.model("Public", PublicSlotSchema);
+export const Parking = mongoose.model("Parking", PublicSlotSchema);

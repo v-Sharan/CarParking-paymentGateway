@@ -1,5 +1,5 @@
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Tabs, Stack } from "expo-router";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Pressable } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 
@@ -27,17 +27,33 @@ const TabsPage = () => {
           backgroundColor: "#6c47ff",
         },
         headerTintColor: "#fff",
+        tabBarActiveTintColor: "#6c47ff",
+        tabBarInactiveTintColor: "black",
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
           headerTitle: "Homes",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
-          tabBarLabel: "Home",
           headerRight: () => <LogoutButton />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              size={size}
+              color={color}
+              name={focused ? "home" : "home-outline"}
+            />
+          ),
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name="booking"
+        options={{
+          headerTitle: "Booking",
+          headerRight: () => <LogoutButton />,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons size={size} color={color} name="book-online" />
+          ),
         }}
         redirect={!isSignedIn}
       />

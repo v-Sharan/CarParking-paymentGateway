@@ -1,8 +1,10 @@
-import { View, Text, FlatList, Pressable } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useUser } from "@clerk/clerk-expo";
+import { View, FlatList } from "react-native";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
-import { useIsFocused } from "@react-navigation/native";
+import Slot from "@/components/SlotComponent";
+import { useFocusEffect } from "@react-navigation/native";
+import { useQuery } from "react-query";
+import Spinner from "react-native-loading-spinner-overlay";
 
 type SlotType = {
   _id: "string";
@@ -10,33 +12,46 @@ type SlotType = {
   floor: number;
   updatedAt: string;
   createdAt: string;
+  free: boolean;
 };
 
 const Home = () => {
-  const { user } = useUser();
   const [slot, setSlot] = useState<SlotType[] | []>([]);
-  const isFouse = useIsFocused();
-  const [slected, setSelected] = useState<number>(0);
+
+  const { data, refetch, isLoading, isRefetching } = useQuery("blogs", () => {
+    return axios.get("http://192.168.8.177:8000/slot", {});
+  });
+
+  const firstTimeRef = useRef(true);
 
   useEffect(() => {
-    (async () => {
-      if (!isFouse) return;
-      const res = await axios.get("http://192.168.189.177:8000/slot");
-      const data = await res.data;
-      console.log(data);
-      setSlot(data?.slot);
-    })();
-  }, [isFouse]);
+    setSlot(data?.data?.slot);
+  }, [data?.data?.slot]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (firstTimeRef.current) {
+        firstTimeRef.current = false;
+        return;
+      }
+
+      refetch();
+    }, [refetch])
+  );
 
   return (
     <View style={{ flex: 1 }}>
-      <Text>Welcome, {user?.emailAddresses[0].emailAddress} 🎉</Text>
-      {slot.length != 0 && (
+      <Spinner visible={isLoading || isRefetching} />
+      {slot?.length != 0 && (
         <FlatList
           data={slot}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => setSelected(item.pid)}></Pressable>
-          )}
+          numColumns={2}
+          contentContainerStyle={{
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
+          }}
+          renderItem={({ item }) => <Slot {...item} />}
         />
       )}
     </View>

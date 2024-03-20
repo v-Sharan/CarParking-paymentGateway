@@ -5,14 +5,18 @@ import * as SecureStore from "expo-secure-store";
 import { useUser } from "@clerk/clerk-expo";
 import { Alert } from "react-native";
 import "expo-dev-client";
+import { QueryClient, QueryClientProvider } from "react-query";
+import NetInfo from "@react-native-community/netinfo";
+import { onlineManager } from "react-query";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+const queryClient = new QueryClient();
 
 const InitialLayout = () => {
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [login, setLogin] = useState(false);
-
   const { user } = useUser();
 
   const userLogin = async ({
@@ -24,18 +28,24 @@ const InitialLayout = () => {
     email: string | undefined;
     clerkId: string | undefined;
   }) => {
+    onlineManager.setEventListener((setOnline) => {
+      return NetInfo.addEventListener((state) => {
+        setOnline(!!state.isConnected);
+      });
+    });
+
     try {
       const body = JSON.stringify({ username, email, clerkId });
-      console.log(body);
-      const res = await fetch("http://192.168.189.177:8000/auth/login", {
+      const res = await fetch("http://192.168.8.177:8000/auth/login", {
         method: "POST",
         body,
         headers: {
           "content-type": "application/json",
         },
       });
-      if (res.ok) Alert.alert("Logged in Succesfully");
+      if (!res.ok) Alert.alert("Login Failed");
     } catch (e) {
+      console.log(e);
       Alert.alert("Server Error pls try again");
       return;
     }
@@ -46,6 +56,7 @@ const InitialLayout = () => {
   }, [isSignedIn]);
 
   useEffect(() => {
+    console.log(isLoaded);
     if (!isLoaded) return;
     console.log("User changed: ", isSignedIn);
 
@@ -68,7 +79,7 @@ const InitialLayout = () => {
     } else if (!isSignedIn) {
       router.replace("/register");
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, isLoaded]);
 
   return <Slot />;
 };
@@ -92,12 +103,14 @@ const tokenCache = {
 
 const RootLayout = () => {
   return (
-    <ClerkProvider
-      publishableKey={CLERK_PUBLISHABLE_KEY}
-      tokenCache={tokenCache}
-    >
-      <InitialLayout />
-    </ClerkProvider>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider
+        publishableKey={CLERK_PUBLISHABLE_KEY}
+        tokenCache={tokenCache}
+      >
+        <InitialLayout />
+      </ClerkProvider>
+    </QueryClientProvider>
   );
 };
 

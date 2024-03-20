@@ -20,3 +20,7 @@ const SlotSchema = new Schema(
 );
 
 export const Slot = mongoose.model("Slot", SlotSchema);
+
+// data = {
+//   slots: []
+// }
