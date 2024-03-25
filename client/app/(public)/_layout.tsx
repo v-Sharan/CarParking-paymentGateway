@@ -6,12 +6,8 @@ import { useAuth } from "@clerk/clerk-expo";
 export const LogoutButton = () => {
   const { signOut } = useAuth();
 
-  const doLogout = () => {
-    signOut();
-  };
-
   return (
-    <Pressable onPress={doLogout} style={{ marginRight: 10 }}>
+    <Pressable onPress={() => signOut()} style={{ marginRight: 10 }}>
       <Ionicons name="log-out-outline" size={24} color={"#fff"} />
     </Pressable>
   );
@@ -53,6 +49,17 @@ const TabsPage = () => {
           headerRight: () => <LogoutButton />,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons size={size} color={color} name="book-online" />
+          ),
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          headerTitle: "History",
+          headerRight: () => <LogoutButton />,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons size={size} color={color} name="history" />
           ),
         }}
         redirect={!isSignedIn}

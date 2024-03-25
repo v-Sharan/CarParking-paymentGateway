@@ -1,13 +1,12 @@
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
-import { Slot, useRouter } from "expo-router";
+import { Slot, Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { useUser } from "@clerk/clerk-expo";
 import { Alert } from "react-native";
 import "expo-dev-client";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider, onlineManager } from "react-query";
 import NetInfo from "@react-native-community/netinfo";
-import { onlineManager } from "react-query";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -19,6 +18,12 @@ const InitialLayout = () => {
   const [login, setLogin] = useState(false);
   const { user } = useUser();
 
+  onlineManager.setEventListener((setOnline) => {
+    return NetInfo.addEventListener((state) => {
+      setOnline(!!state.isConnected);
+    });
+  });
+
   const userLogin = async ({
     clerkId,
     username,
@@ -28,15 +33,10 @@ const InitialLayout = () => {
     email: string | undefined;
     clerkId: string | undefined;
   }) => {
-    onlineManager.setEventListener((setOnline) => {
-      return NetInfo.addEventListener((state) => {
-        setOnline(!!state.isConnected);
-      });
-    });
-
     try {
       const body = JSON.stringify({ username, email, clerkId });
       const res = await fetch("http://192.168.192.177:8000/auth/login", {
+        // const res = await fetch("http://192.168.1.28:8000/auth/login", {
         method: "POST",
         body,
         headers: {
@@ -81,7 +81,14 @@ const InitialLayout = () => {
     }
   }, [isSignedIn, isLoaded]);
 
-  return <Slot />;
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(public)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="[id]" options={{ headerShown: true, title: "" }} />
+    </Stack>
+  );
 };
 
 const tokenCache = {

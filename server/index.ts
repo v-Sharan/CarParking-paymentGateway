@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import path from "path";
 import { config } from "dotenv";
 import { ConnectDB } from "./schema/connection";
 
@@ -8,10 +9,13 @@ import RaspberryRoutes from "./Router/RaspberryRoutes";
 import AuthRoutes from "./Router/auth";
 import SlotRoutes from "./Router/SlotRoutes";
 import PaymentRoutes from "./Router/payment";
+import HistoryRoutes from "./Router/history";
 
 config();
 
 const server = express();
+
+server.use("/qrcode", express.static(path.join("qrcode")));
 
 server.use(express.json());
 server.use(bodyParser.json());
@@ -24,6 +28,7 @@ server.use("/api", RaspberryRoutes);
 server.use("/auth", AuthRoutes);
 server.use("/slot", SlotRoutes);
 server.use("/payment", PaymentRoutes);
+server.use("/his", HistoryRoutes);
 
 const StartServer = () => {
   try {

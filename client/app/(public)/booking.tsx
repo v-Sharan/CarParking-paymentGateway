@@ -32,6 +32,7 @@ const booking = () => {
 
   const { data, refetch, isLoading, isRefetching } = useQuery("slots", () => {
     return axios.get("http://192.168.192.177:8000/slot", {});
+    // return axios.get("http://192.168.1.28:8000/slot", {});
   });
 
   const firstTimeRef = useRef(true);
@@ -54,6 +55,7 @@ const booking = () => {
   const CreateOrderID = async () => {
     const { data } = await axios.post(
       "http://192.168.192.177:8000/payment/createOrder",
+      // "http://192.168.1.28:8000/payment/createOrder",
       {
         amount: 100,
       }
@@ -86,6 +88,7 @@ const booking = () => {
         const body = { ...data, userId: user?.id, pid: select };
         axios
           .post("http://192.168.192.177:8000/payment/verify", body)
+          // .post("http://192.168.1.28:8000/payment/verify", body)
           .then((res) => Alert.alert(res.data.message))
           .catch((e) => console.log(e));
       })

@@ -12,6 +12,10 @@ const BookingSchema = new Schema(
       type: String,
       required: [true, "Orders Id is important"],
     },
+    qrCode: {
+      type: String,
+      required: [true, "QR code is Required to use in check-in"],
+    },
     slot: [
       {
         type: String,

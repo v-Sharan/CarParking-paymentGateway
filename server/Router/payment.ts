@@ -1,9 +1,10 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Payment } from "../schema/paymentSchema";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
-
+import QRCode from "qrcode";
 import { client } from "../utils/client";
 import { Slot } from "../schema/SlotSchema";
+import { User } from "../schema/userSchema";
 import { Booking } from "../schema/bookingSchema";
 
 const router = Router();
@@ -39,14 +40,31 @@ router.post("/verify", async (req: Request, res: Response) => {
   });
   await pay.save();
   const slots = await Slot.findOneAndUpdate({ pid }, { status: "booked" });
+  if (!slots) return res.json({ message: "No Slots Available" });
+  const qrcode = `/qrcode/${slots._id}.png`;
+  await QRCode.toFile(
+    `.${qrcode}`,
+    JSON.stringify({
+      razorpay_order_id,
+      userId,
+      slot: slots._id,
+    })
+  );
+  console.log(qrcode);
   const Book = await Booking.create({
     orderId: razorpay_order_id,
     userId: userId,
-    slot: slots?._id,
+    slot: slots._id,
+    qrCode: qrcode,
   });
   await Book.save();
+  const user = await User.findOneAndUpdate(
+    { clerkId: userId },
+    { $push: { bookingHistory: Book._id } }
+  );
   return res.json({
     message: `Payment success and Booked slot number ${slots?.pid}`,
+    qrcode,
   });
 });
 

@@ -19,12 +19,7 @@ const UserSchema = new Schema(
       required: [true, "Email id is required"],
       unique: [true, "Email already exists"],
     },
-    password: {
-      type: String,
-      required: false,
-    },
-    currentbookingId: { type: mongoose.Types.ObjectId, ref: "Payment" },
-    bookingHistory: [{ type: mongoose.Types.ObjectId, ref: "booking" }],
+    bookingHistory: [{ type: mongoose.Types.ObjectId, ref: "Booking" }],
   },
   { timestamps: true }
 );

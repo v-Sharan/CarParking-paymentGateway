@@ -19,6 +19,7 @@ const Home = () => {
   const [slot, setSlot] = useState<SlotType[] | []>([]);
 
   const { data, refetch, isLoading, isRefetching } = useQuery("blogs", () => {
+    // return axios.get("http://192.168.1.28:8000/slot", {});
     return axios.get("http://192.168.192.177:8000/slot", {});
   });
 
